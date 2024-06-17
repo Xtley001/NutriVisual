@@ -70,7 +70,7 @@ st.set_page_config(page_title="NutriVisual")
 
 st.title("NutriVisual")
 st.markdown("""
-Welcome to NutriVisual! This tool helps nutritionists and dietitians analyze diet composition based on uploaded documents or images. Upload a PDF, DOC, or image file to get started.
+Welcome to NutriVisual! This tool helps nutritionists and dietitians analyze diet composition based on uploaded documents or images.
 """)
 
 uploaded_file = st.file_uploader("Choose a file (PDF, DOC, JPG, JPEG, PNG)...", type=["pdf", "doc", "docx", "jpg", "jpeg", "png"])
@@ -106,3 +106,4 @@ if submit and image:
     st.subheader("Diet Composition Analysis")
     for item in items:
         st.write(f"- {item[0]}: {item[1]}")
+
