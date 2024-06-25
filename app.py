@@ -383,7 +383,6 @@ if submit and image:
         # Display tailored recommendations based on patient condition
         if patient_condition in input_prompts:
             st.subheader("Tailored Recommendations")
-            st.markdown(f"Recommendations for {patient_condition}:")
             # Display tailored recommendations directly
             recommendations = get_tailored_recommendations(patient_condition)
             st.markdown(recommendations)
