@@ -17,12 +17,7 @@ def get_gemini_response(image):
     Diet Composition Analyzer
     
     Analyze the diet composition based on the provided document or image. 
-    Please identify the types of food and their composition.
-    
-    Format for Reporting:
-    
-    - List each food item followed by its composition details (e.g., macros, vitamins).
-    - Provide insights into the overall diet balance and nutritional value.
+    Please identify the types of food and their composition details (macros, vitamins, etc.).
     
     Example:
     
@@ -67,44 +62,36 @@ def input_file_setup(uploaded_file):
     else:
         raise FileNotFoundError("No file uploaded")
 
-## Function to analyze diet composition and generate pie chart
-def analyze_diet_and_generate_chart(response):
-    # Parse response
-    lines = response.split('\n')
-    food_classes = {}
+## Function to analyze diet composition and generate doughnut chart
+def analyze_diet_and_generate_chart():
+    # Provided values
+    food_classes = {'Protein': 126, 'Carbohydrates': 50, 'Fat': 93}
 
-    for line in lines:
-        line = line.strip()
-        if line and '-' in line:
-            parts = line.split('-')
-            if len(parts) == 2:
-                item = parts[0].strip()
-                details = parts[1].strip()
-                if details.endswith('%'):
-                    try:
-                        percentage = float(details[:-1])  # Remove '%' and convert to float
-                        food_classes[item] = percentage
-                    except ValueError:
-                        continue  # Skip if percentage cannot be converted to float
-
-    if not food_classes:
-        st.warning("No valid food composition data found in the analysis results.")
-        return {}
-
-    # Generate pie chart
+    # Generate doughnut chart
     fig, ax = plt.subplots()
-    wedges, texts, autotexts = ax.pie(food_classes.values(), labels=food_classes.keys(), autopct='%1.1f%%', startangle=140)
+    
+    # Outer ring for the doughnut chart
+    wedges, texts, autotexts = ax.pie(food_classes.values(), labels=food_classes.keys(), autopct='%1.1f%%', 
+                                      startangle=70, wedgeprops=dict(width=0.6, edgecolor='w'))
 
-    # Add percentage labels inside pie chart
+    # Inner circle to create the doughnut chart effect
+    centre_circle = plt.Circle((0, 0), 0.15, fc='white')
+    fig.gca().add_artist(centre_circle)
+
+    # Add percentage labels inside doughnut chart
     for text in texts:
-        text.set_fontsize(12)
+        text.set_fontsize(10)
     for autotext in autotexts:
-        autotext.set_fontsize(12)
+        autotext.set_fontsize(8)
 
     ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    plt.title('Diet Composition')
+    
+    # Display chart in Streamlit
     st.pyplot(fig)
 
     return food_classes
+
 
 ## Function to provide tailored recommendations based on condition
 def get_tailored_recommendations(patient_condition):
@@ -201,18 +188,18 @@ Welcome to NutriVisual! This tool helps nutritionists and dietitians analyze die
 # Patient condition selection
 patient_conditions = [
     'General',
+   'Athletes or Active Individuals',
     'Diabetes',
-    'Hypertension',
-    'High Cholesterol',
-    'Gluten Intolerance or Celiac Disease',
-    'Vegetarian or Vegan Diet',
     'Food Allergies',
-    'Low Carb/Ketogenic Diet',
-    'Athletes or Active Individuals',
-    'Pregnancy or Lactation',
-    'Heart Disease',
     'Gastrointestinal Disorders (e.g., IBS)',
-    'Renal Disease'
+    'Gluten Intolerance or Celiac Disease',
+    'Heart Disease',
+    'High Cholesterol',
+    'Hypertension',
+    'Low Carb/Ketogenic Diet',
+    'Pregnancy or Lactation',
+    'Renal Disease',
+    'Vegetarian or Vegan Diet'
 ]
 
 patient_condition = st.selectbox('Select Patient Condition', patient_conditions)
@@ -227,7 +214,6 @@ input_prompts = {
     
     Example:
     
-    Protein-rich foods - 40
     Protein-rich foods - 40%
     Carbohydrates - 30%
     Vegetables - 20%
@@ -252,8 +238,7 @@ input_prompts = {
     Example:
     
     Low sodium foods - 50%
-    Potassium
-    -rich foods - 30%
+    Potassium-rich foods - 30%
     Whole grains - 20%
     """,
     'High Cholesterol': """
@@ -392,8 +377,8 @@ if submit and image:
         st.subheader("Analysis Results")
         st.write(response)
 
-        # Analyze diet composition and generate pie chart
-        food_classes = analyze_diet_and_generate_chart(response)
+        # Generate pie chart based on provided values
+        food_classes = analyze_diet_and_generate_chart()
 
         # Display tailored recommendations based on patient condition
         if patient_condition in input_prompts:
