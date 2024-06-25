@@ -368,7 +368,7 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Error: {e}")
 
-submit = st.button("Tell me about this diet and its composition")
+submit = st.button("Tell me about this diet and it's composition")
 
 ## If submit button is clicked
 if submit and image:
